@@ -21,7 +21,7 @@ class Population():
 
     def breed(self):
         if len(self.gen) == 100:
-            pass
+            return
         children = []
 
         def make_child(nn1, nn2):
@@ -32,11 +32,12 @@ class Population():
                 child.state_dict()[key].copy_(torch.tensor((A + B) / 2))
             return child
 
-        while len(children) < 50:
+        while len(children) < 40:
             i = np.random.randint(len(self.gen), size=2)
             children.append(make_child(self.gen[i[0]], self.gen[i[1]]))
 
         self.gen = self.gen + children
+        self.gen = self.gen + [Player() for i in range(10)]
         np.random.shuffle(self.gen)
 
 
