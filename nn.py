@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 class Player(nn.Module):
     """ Feed forward player module - default dimensions such that
@@ -15,7 +16,7 @@ class Player(nn.Module):
     """
 
     def __init__(self, in_dim=9, fc1_dim=250, fc2_dim=250, out_dim=9):
-        super().__init__()
+        super(Player, self).__init__()
         self.fc1 = nn.Linear(in_dim, fc1_dim)
         self.fc2 = nn.Linear(fc1_dim, fc2_dim)
         self.fc3 = nn.Linear(fc2_dim, out_dim)
@@ -31,13 +32,14 @@ class Player(nn.Module):
                 list[float]: Transformed input of dimension 'out_dim'.
 
         """
+        x = torch.tensor(x).float()
         y = self.fc1(x)
-        y = F.relu(x)
-        y = self.fc2(x)
-        y = F.relu(x)
-        y = self.fc3(x)
-        y = F.softmax(x)
-        return y
+        y = F.relu(y)
+        y = self.fc2(y)
+        y = F.relu(y)
+        y = self.fc3(y)
+        y = F.softmax(y, dim=0)
+        return y.data.numpy()
 
     def save_model(self, path):
         """ Saves this network's state dictionary to file at 'path'.
@@ -57,7 +59,7 @@ class Player(nn.Module):
         """
         self.load_state_dict(torch.load(path))
 
-    def weights(self):
+    def state(self):
         """ Loads a saved state dictionary into this network from 'path'.
 
             Args:
@@ -69,18 +71,21 @@ class Player(nn.Module):
         """
         return self.state_dict()
 
+    def __repr__(self):
+        return f'(NN {str(abs(hash(str(self.state_dict()))))[:3]})'
+
 
 if __name__ == '__main__':
     # Testing manual parameter overriding.
-    p = Player()
-    print(p.weights()['fc3.weight'])
+    p1 = Player()
+    p2 = Player()
+    p3 = Player()
+    w1 = p1.state()['fc3.weight'].numpy()
+    w2 = p2.state()['fc3.weight'].numpy()
+    print(p3.state()['fc3.weight'])
+    p3.state_dict()['fc3.weight'].copy_(torch.tensor((w1 + w2) / 2))
     print()
-    print()
-    print()
-    testw = p.weights()['fc3.weight']
-    testw[0] = 0
-    p.weights()['fc3.weight'] = testw
-    print(p.weights()['fc3.weight'])
+    print(p3.state()['fc3.weight'])
 
 
 
