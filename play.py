@@ -19,22 +19,26 @@ if __name__ == '__main__':
         if computer_turn:
 
             prob = computer(board.state)
-            max_index = np.argmax(prob)[0]
+            max_index = np.argmax(prob)
+            max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
             
             while (not board.is_valid(max_index)): # inf loop if all moves are invalid or prob is filled w/ 0s and is_valid(0) == false
                 prob[max_index] = 0
-                max_index = np.argmax(prob)[0]
+                max_index = np.argmax(prob)
+                max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
 
             board.apply_move(1, max_index)
             print('computer played in ',  max_index)
 
         else:
 
-            move = input('your turn, input number between 0-8')
+            move = int(input('your turn, input number between 0-8'))
+            if not board.is_valid(move): print('youre dum')
             print('you input ', move)
             board.apply_move(-1, move)
 
         print(board.to_string())
+        computer_turn = not computer_turn
 
     res = board.winner()
 
