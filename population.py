@@ -7,14 +7,16 @@ class Population():
         self.gen = np.array([Player() for i in range(100)])
 
     def get_pairs(self):
-        pass
+        arr = []
+        for i in range(0, len(self.gen), 2):
+            arr.append((self.gen[i], self.gen[i + 1]))
+        return np.array(arr)
+
+    def cull(self):
+        self.gen = np.array()
 
 
 
 if __name__ == '__main__':
     p = Population()
-    print(p.gen[0].weights()['fc1.weight'])
-    print()
-    print(p.gen[1].weights()['fc1.weight'])
-    print()
-    print(p.gen[2].weights()['fc1.weight'])
+    print(p.gen)

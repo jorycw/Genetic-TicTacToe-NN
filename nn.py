@@ -69,6 +69,9 @@ class Player(nn.Module):
         """
         return self.state_dict()
 
+    def __repr__(self):
+        return f'(NN {str(abs(hash(str(self.state_dict()))))[:3]})'
+
 
 if __name__ == '__main__':
     # Testing manual parameter overriding.
