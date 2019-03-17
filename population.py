@@ -3,6 +3,9 @@ import numpy as np
 import torch
 
 class Population():
+    """ Class to represent the current generation of neural networks
+
+    """
 
     def __init__(self):
         self.gen = np.array([Player() for i in range(100)])
