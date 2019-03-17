@@ -34,9 +34,9 @@ class Player(nn.Module):
         """
         x = torch.tensor(x).float()
         y = self.fc1(x)
-        y = F.relu(y)
+        y = F.tanh(y)
         y = self.fc2(y)
-        y = F.relu(y)
+        y = F.tanh(y)
         y = self.fc3(y)
         y = F.softmax(y, dim=0)
         return y.data.numpy()
