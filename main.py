@@ -56,18 +56,10 @@ def elim_pop_to_winner(pop):
 		if len(pop.gen) != 0:
 			pair.append(pop.gen.pop())
 
+	return pair[0]
 
 
-
-
-
-
-
-
-
-
-
-def unparallized_train(epoch=1000)
+def unparallized_train(epoch=1000, output_fn)
 	pop = Population()
 	for e in trange(epoch):
 
@@ -76,14 +68,9 @@ def unparallized_train(epoch=1000)
 			play_game(pair[0], pair[1])
 
 		pop.cull()
+	elim_pop_to_winner(pop).save_model(output_fn)
 
 
 if __name__ == '__main__':
-
-
-
-		##########
-	
-
-	pair[0].save_model('winner.model')
+	unparallized_train(epoch=1000, 'winner.model')
 
