@@ -3,28 +3,55 @@ import numpy as np
 import torch
 
 class Population():
+    """ Class to represent the current generation of neural networks
+
+    """
 
     def __init__(self):
         self.gen = np.array([Player() for i in range(100)])
 
     def get_pairs(self):
+        """ Returns:
+                list[list[Player]] : The current generation in pairwise tuples.
+
+        """
         arr = []
         for i in range(0, len(self.gen), 2):
             arr.append((self.gen[i], self.gen[i + 1]))
         return np.array(arr)
 
     def cull(self):
+        """ Culls the current generation, killing all losing players.
+            If there were draws, selects enough tying players to fill
+            the current generation up to half capacity.
+
+        """
+
         tied = [nn for nn in self.gen if nn.winner is None]
         self.gen = list(filter(lambda x: x.winner is True, self.gen))
         while len(self.gen) < 50:
             self.gen.append(tied.pop())
 
     def breed(self):
+        """ Repopulates the current generation through breeding of
+            pairs of random players.
+
+        """
+
         if len(self.gen) == 100:
             return
         children = []
 
         def make_child(nn1, nn2):
+            """ Breeds two neural network players.
+
+                Returns:
+                    Player: A new neural network Player object formed from the 
+                            result of averaging all weights and biases of the 
+                            parents neural networks.
+
+            """
+
             child = Player()
             for key in nn1.state().keys():
                 A = nn1.state()[key].numpy()
@@ -42,6 +69,7 @@ class Population():
 
 
 if __name__ == '__main__':
+    # Testing population functions
     p = Population()
     p.gen[0].winner = True
     print(p.gen)
