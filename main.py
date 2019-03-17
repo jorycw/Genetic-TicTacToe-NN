@@ -3,73 +3,87 @@ from population import Population
 import numpy as np
 from tqdm import trange
 
-if __name__ == '__main__':
+POP_SIZE = 100
+WEIGHTS = [-1, 1, 2] # [loss, tie, win]
 
-	epoch = 1500
+def best_valid_move(board, weights)
 
-	pop = Population()
-	for e in trange(epoch):
+	max_index = np.argmax(weights)
+	max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
+			
+	while (not board.is_valid(max_index)): # inf loop if all moves are invalid or prob is filled w/ 0s and is_valid(0) == false
+		prob[max_index] = 0
+		max_index = np.argmax(weights)
+		max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
 
-		pop.breed()
-		for pair in pop.get_pairs():
+	return max_index
 
-			board = Board()
-			player = 1
 
-			while (not board.is_over()):
-				prob = pair[player](board.state)
-				max_index = np.argmax(prob)
-				max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
-				
-				while (not board.is_valid(max_index)): # inf loop if all moves are invalid or prob is filled w/ 0s and is_valid(0) == false
-					prob[max_index] = 0
-					max_index = np.argmax(prob)
-					max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
+def play_game(player1, player2):
+	players = [player1, player2]
+	turn = 0;
+	board = Board()
 
-				board.apply_move(player, max_index)
-				player = player * -1
+	while not board.is_over():
+		weights = players[turn % 2](board.state)
+		
+		best_move = best_valid_move(board, weights)
 
-			res = board.winner()
-
-			if res != 0:
-				pair[(res - 1) // (-2)].winner = True
-				pair[(res + 1) //   2 ].winner = False
-			else:
-				pair[0].winner = None
-				pair[1].winner = None
-
-		pop.cull()
+		board.apply_move(player, max_index)
 	
+		turn += 1
 
+	res = board.winner()
+	set_player_results(players[0], res)
+	set_player_results(players[1], res * -1)
 
-		##########
+def set_player_results(player, res):
+	if res == 0:
+		player.winner = None
+	else:
+		player.winner = (res == 1)
+
+def elim_pop_to_winner(pop):
 	pair = [pop.gen.pop(), pop.gen.pop()]
 
 	while len(pair) == 2:
-		board = Board()
-		player = 1
-
-		while (not board.is_over()):
-			prob = pair[player](board.state)
-			max_index = np.argmax(prob)
-			max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
-			
-			while (not board.is_valid(max_index)): # inf loop if all moves are invalid or prob is filled w/ 0s and is_valid(0) == false
-				prob[max_index] = 0
-				max_index = np.argmax(prob)
-				max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
-
-			board.apply_move(player, max_index)
-			player = player * -1
-
-			res = board.winner()
-		if (res == -1):
+		play_game(pair[0], pair[1])
+		if (pair):
 			pair.pop(0)
 		else:
 			pair.pop(1)
 
 		if len(pop.gen) != 0:
 			pair.append(pop.gen.pop())
+
+
+
+
+
+
+
+
+
+
+
+
+def unparallized_train(epoch=1000)
+	pop = Population()
+	for e in trange(epoch):
+
+		pop.breed()
+		for pair in pop.get_pairs():
+			play_game(pair[0], pair[1])
+
+		pop.cull()
+
+
+if __name__ == '__main__':
+
+
+
+		##########
+	
 
 	pair[0].save_model('winner.model')
 
