@@ -22,6 +22,16 @@ class Population():
         return np.array(arr)
 
     def cull(self):
+        """ Culls the current generation, killing the bottom half
+            of the generation in terms of score.
+
+        """
+
+        self.gen.sort(reverse=True)
+        self.gen = self.gen[:(len(self.gen) / 2)]
+
+
+    def winner_based_cull(self):
         """ Culls the current generation, killing all losing players.
             If there were draws, selects enough tying players to fill
             the current generation up to half capacity.
@@ -68,22 +78,32 @@ class Population():
         self.gen = self.gen + [Player() for i in range(10)]
         np.random.shuffle(self.gen)
 
-    def eval_game(player1, player2):
-        players = [player1, player2]
-        turn = 0;
-        board = Board()
+    def eval():
+        def eval_game(player1, player2):
+            players = [player1, player2]
+            turn = 0;
+            board = Board()
 
-        while not board.is_over():
-            weights = players[turn % 2](board.state)
+            while not board.is_over():
+                weights = players[turn % 2](board.state)
+                
+                best_move = best_valid_move(board, weights)
+
+                board.apply_move(player, max_index)
             
-            best_move = best_valid_move(board, weights)
+                turn += 1
 
-            board.apply_move(player, max_index)
-        
-            turn += 1
+            return 1 if board.winner() == 1 else 0 # 1 for player1 win, 0 otherwise
 
-        res = board.winner()
-        return res # 1 for player1, -1 for player2, 0 for tie
+        win_percent = 0
+        for player in self.gen:
+            for i in self.first_gen:
+                win_percent += eval_game(player, i)
+        win_percent /= (len(self.gen) ** 2)
+        return win_percent * 100
+
+
+
 
 if __name__ == '__main__':
     # Testing population functions

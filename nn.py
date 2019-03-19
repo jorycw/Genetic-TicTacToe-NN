@@ -73,6 +73,15 @@ class Player(nn.Module):
     def __repr__(self):
         return f'(NN {str(abs(hash(str(self.state_dict()))))[:3]})'
 
+    def __eq__(self, other):
+        return self.score == other.score
+
+    def __lt__(self, other):
+        return self.score < other.score
+
+    def __gt__(self, other):
+        return self.score > other.score
+
 
 if __name__ == '__main__':
     # Testing manual parameter overriding.
