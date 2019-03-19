@@ -9,6 +9,7 @@ class Population():
 
     def __init__(self):
         self.gen = np.array([Player() for i in range(100)])
+        self.first_gen = np.copy(self.gen)
 
     def get_pairs(self):
         """ Returns:
@@ -67,6 +68,22 @@ class Population():
         self.gen = self.gen + [Player() for i in range(10)]
         np.random.shuffle(self.gen)
 
+    def eval_game(player1, player2):
+        players = [player1, player2]
+        turn = 0;
+        board = Board()
+
+        while not board.is_over():
+            weights = players[turn % 2](board.state)
+            
+            best_move = best_valid_move(board, weights)
+
+            board.apply_move(player, max_index)
+        
+            turn += 1
+
+        res = board.winner()
+        return res # 1 for player1, -1 for player2, 0 for tie
 
 if __name__ == '__main__':
     # Testing population functions
