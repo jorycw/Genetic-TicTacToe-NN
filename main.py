@@ -6,13 +6,12 @@ from tqdm import trange
 POP_SIZE = 100
 WEIGHTS = [-1, 1, 2] # [loss, tie, win]
 
-def best_valid_move(board, weights)
-
+def best_valid_move(board, weights):
 	max_index = np.argmax(weights)
 	max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
 			
 	while (not board.is_valid(max_index)): # inf loop if all moves are invalid or prob is filled w/ 0s and is_valid(0) == false
-		prob[max_index] = 0
+		weights[max_index] = 0
 		max_index = np.argmax(weights)
 		max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
 
@@ -29,7 +28,7 @@ def play_game(player1, player2):
 		
 		best_move = best_valid_move(board, weights)
 
-		board.apply_move(player, max_index)
+		board.apply_move((((turn + 1) % 2) * 2) - 1, best_move)
 	
 		turn += 1
 
@@ -59,7 +58,7 @@ def elim_pop_to_winner(pop):
 	return pair[0]
 
 
-def unparallized_train(epoch=1000, output_fn)
+def unparallized_train(output_fn, epoch=1000):
 	pop = Population()
 	for e in trange(epoch):
 
@@ -72,5 +71,5 @@ def unparallized_train(epoch=1000, output_fn)
 
 
 if __name__ == '__main__':
-	unparallized_train(epoch=1000, 'winner.model')
+	unparallized_train('winner.model')
 

@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import numpy as np
 
 class Player(nn.Module):
@@ -34,11 +33,11 @@ class Player(nn.Module):
         """
         x = torch.tensor(x).float()
         y = self.fc1(x)
-        y = F.tanh(y)
+        y = torch.tanh(y)
         y = self.fc2(y)
-        y = F.tanh(y)
+        y = torch.tanh(y)
         y = self.fc3(y)
-        y = F.softmax(y, dim=0)
+        y = torch.softmax(y, dim=0)
         return y.data.numpy()
 
     def save_model(self, path):
