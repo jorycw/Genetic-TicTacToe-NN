@@ -74,7 +74,7 @@ def unparallized_train(output_fn, epoch=1000):
 
 		pop.breed()
 
-		EVAL_VS_FIRST_GEN.append(pop.eval)
+		EVAL_VS_FIRST_GEN.append(pop.eval())
 
 		for pair in pop.get_pairs():
 			play_game(pair[0], pair[1])
