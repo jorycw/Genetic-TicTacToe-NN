@@ -4,7 +4,9 @@ import numpy as np
 from tqdm import trange
 
 POP_SIZE = 100
-WEIGHTS = [-1, 1, 2] # [loss, tie, win]
+WEIGHTS = [-1, 0, 1] # [loss, tie, win]
+
+EVAL_VS_FIRST_GEN = []
 
 def best_valid_move(board, weights):
 	max_index = np.argmax(weights)
@@ -37,10 +39,18 @@ def play_game(player1, player2):
 	set_player_results(players[1], res * -1)
 
 def set_player_results(player, res):
+	'''
 	if res == 0:
 		player.winner = None
 	else:
 		player.winner = (res == 1)
+	'''
+	if res == -1:
+		player.score += WEIGHTS[0]
+	elif res == 0:
+		player.score += WEIGHTS[1]
+	else:
+		player.score += WEIGHTS[2]
 
 def elim_pop_to_winner(pop):
 	pair = [pop.gen.pop(), pop.gen.pop()]
@@ -63,6 +73,9 @@ def unparallized_train(output_fn, epoch=1000):
 	for e in trange(epoch):
 
 		pop.breed()
+
+		EVAL_VS_FIRST_GEN.append(pop.eval)
+
 		for pair in pop.get_pairs():
 			play_game(pair[0], pair[1])
 
