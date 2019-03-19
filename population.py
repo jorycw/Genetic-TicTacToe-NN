@@ -1,6 +1,7 @@
 from nn import Player
 import numpy as np
 import torch
+from board import Board
 
 class Population():
     """ Class to represent the current generation of neural networks
@@ -27,8 +28,9 @@ class Population():
 
         """
 
-        self.gen.sort(reverse=True)
-        self.gen = self.gen[:(len(self.gen) / 2)]
+        self.gen.sort()
+        self.gen = self.gen[::-1]
+        self.gen = self.gen[:50]
 
 
     def winner_based_cull(self):
@@ -74,11 +76,23 @@ class Population():
             i = np.random.randint(len(self.gen), size=2)
             children.append(make_child(self.gen[i[0]], self.gen[i[1]]))
 
-        self.gen = self.gen + children
-        self.gen = self.gen + [Player() for i in range(10)]
+        self.gen = np.append(self.gen, children)
+        self.gen = np.append(self.gen, [Player() for i in range(10)])
         np.random.shuffle(self.gen)
 
-    def eval():
+    def eval(self):
+        #### DELETE LATER ####
+        def best_valid_move(board, weights):
+            max_index = np.argmax(weights)
+            max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
+            
+            while (not board.is_valid(max_index)): # inf loop if all moves are invalid or prob is filled w/ 0s and is_valid(0) == false
+                weights[max_index] = 0
+                max_index = np.argmax(weights)
+                max_index = max_index if isinstance(max_index, np.int64) else max_index[0]
+
+            return max_index
+
         def eval_game(player1, player2):
             players = [player1, player2]
             turn = 0;
@@ -89,7 +103,7 @@ class Population():
                 
                 best_move = best_valid_move(board, weights)
 
-                board.apply_move(player, max_index)
+                board.apply_move((((turn + 1) % 2) * 2) - 1, best_move)
             
                 turn += 1
 
