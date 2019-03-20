@@ -2,6 +2,7 @@ from board import Board
 from population import Population
 import numpy as np
 from tqdm import trange
+import matplotlib.pyplot as plt
 
 POP_SIZE = 100
 WEIGHTS = [-1, 0, 1] # [loss, tie, win]
@@ -68,21 +69,32 @@ def elim_pop_to_winner(pop):
 	return pair[0]
 
 
-def unparallized_train(output_fn, epoch=1000):
+def unparallized_train(output_fn, epoch=1001):
 	pop = Population()
 	for e in trange(epoch):
 
 		pop.breed()
 
-		EVAL_VS_FIRST_GEN.append(pop.eval())
+		if e % 50 == 0:
+			EVAL_VS_FIRST_GEN.append(pop.eval())
 
 		for pair in pop.get_pairs():
 			play_game(pair[0], pair[1])
 
 		pop.cull()
-	elim_pop_to_winner(pop).save_model(output_fn)
+	#elim_pop_to_winner(pop).save_model(output_fn)
 
 
 if __name__ == '__main__':
 	unparallized_train('winner.model')
+
+	X = range(len(EVAL_VS_FIRST_GEN))
+	Y = EVAL_VS_FIRST_GEN
+
+	plt.plot(X, Y)
+	plt.savefig("wins_vs_iteration")
+	plt.show()
+
+
+
 

@@ -19,7 +19,7 @@ class Player(nn.Module):
         self.fc1 = nn.Linear(in_dim, fc1_dim)
         self.fc2 = nn.Linear(fc1_dim, fc2_dim)
         self.fc3 = nn.Linear(fc2_dim, out_dim)
-        self.score # Default None represents tie
+        self.score = 0
 
     def forward(self, x):
         """ Completes 1 forward pass through this network.
@@ -72,6 +72,15 @@ class Player(nn.Module):
 
     def __repr__(self):
         return f'(NN {str(abs(hash(str(self.state_dict()))))[:3]})'
+
+    #def __eq__(self, other):
+    #    return self.score == other.score
+
+    def __lt__(self, other):
+        return self.score < other.score
+
+    def __gt__(self, other):
+        return self.score > other.score
 
 
 if __name__ == '__main__':
