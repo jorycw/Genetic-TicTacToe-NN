@@ -17,6 +17,8 @@ class Population():
                 list[list[Player]] : The current generation in pairwise tuples.
 
         """
+        np.random.shuffle(self.gen)
+
         arr = []
         for i in range(0, len(self.gen), 2):
             arr.append((self.gen[i], self.gen[i + 1]))
@@ -99,7 +101,12 @@ class Population():
             board = Board()
 
             while not board.is_over():
-                weights = players[turn % 2](board.state)
+                player = (((turn + 1) % 2) * 2) - 1 ## player = 1 for player 1, -1 for player 2
+                bd = board.state[:]
+                if turn % 2 == 1:
+                    bd = [x * -1 for x in bd]
+
+                weights = players[turn % 2](bd)
                 
                 best_move = best_valid_move(board, weights)
 
@@ -107,14 +114,16 @@ class Population():
             
                 turn += 1
 
-            return 1 if board.winner() == 1 else 0 # 1 for player1 win, 0 otherwise
+            return board.winner() # 1 for player1 win, 0 for tie, -1 for player2 win
 
-        win_percent = 0
+        wtl = [0, 0, 0] # [win, tie, loss]
+        # win_percent = 0
         for player in self.gen:
             for i in self.first_gen:
-                win_percent += eval_game(player, i)
-        win_percent /= (len(self.gen) ** 2)
-        return win_percent * 100
+                wtl[(eval_game(player, i) * -1) + 1] += 1
+        # win_percent /= (len(self.gen) ** 2)
+        total = wtl[0] + wtl[1] + wtl[2]
+        return [100.0 * wtl[0] / total, 100.0 * (wtl[0] + wtl[1]) / total] # [win rate, tie + win rate]               # win_percent * 100
 
 
 

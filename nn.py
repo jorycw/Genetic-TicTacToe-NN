@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
+from multiprocessing import Lock
 
 class Player(nn.Module):
     """ Feed forward player module - default dimensions such that
@@ -20,6 +21,12 @@ class Player(nn.Module):
         self.fc2 = nn.Linear(fc1_dim, fc2_dim)
         self.fc3 = nn.Linear(fc2_dim, out_dim)
         self.score = 0
+        self.lock = Lock()
+
+    def update_score(self, update):
+        self.lock.acquire()
+        self.score += update
+        self.lock.release()
 
     def forward(self, x):
         """ Completes 1 forward pass through this network.
@@ -31,6 +38,7 @@ class Player(nn.Module):
                 list[float]: Transformed input of dimension 'out_dim'.
 
         """
+
         x = torch.tensor(x).float()
         y = self.fc1(x)
         y = torch.tanh(y)
@@ -38,6 +46,7 @@ class Player(nn.Module):
         y = torch.tanh(y)
         y = self.fc3(y)
         y = torch.softmax(y, dim=0)
+
         return y.data.numpy()
 
     def save_model(self, path):
