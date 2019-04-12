@@ -42,7 +42,7 @@ if __name__ == '__main__':
     res = board.winner()
 
     if res == 0:
-        print('NN bot lost')
+        print('NN bot tied')
     elif res == 1:
         print('NN bot won')
     elif res == -1:
